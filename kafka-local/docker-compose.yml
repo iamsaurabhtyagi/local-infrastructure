@@ -1,0 +1,38 @@
+services:
+  kafka:
+    image: apache/kafka:latest
+
+    container_name: kafka
+    ports: 
+      - "9092:9092"
+    working_dir: /opt/kafka/bin
+
+    environment:
+      #Kafka run in KRaft mode
+      KAFKA_NODE_ID: 1
+
+      #This broker also acts as the controller.
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      #Controller communication.
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      #Kafka listeners.
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+
+      #Address that kafka tell clients to use.
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+
+      #Which listener is used for controller communication.
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      #Protocol used by each listener.
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+      #Replication settings for our single-broker setup.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      #Default number of partitions for newly created topics.
+      KAFKA_NUM_PARTITIONS: 3
